@@ -8,11 +8,11 @@
     vg: varlib-vg
     pvs: /dev/sdc
 
-- name: Logical Volume varlib-lv (119 GiB) anlegen
+- name: Logical Volume varlib-lv (120 GiB) anlegen
   community.general.lvol:
     vg: varlib-vg
     lv: varlib-lv
-    size: 119G
+    size: 120G
 
 - name: XFS-Dateisystem auf varlib-lv erstellen
   community.general.filesystem:
@@ -37,11 +37,11 @@
       - /dev/sde
       - /dev/sdf
 
-- name: Logical Volume sannav-lv (599 GiB) anlegen
+- name: Logical Volume sannav-lv (600 GiB) anlegen
   community.general.lvol:
     vg: sannav-vg
     lv: sannav-lv
-    size: 599G
+    size: 600G
 
 - name: XFS-Dateisystem auf sannav-lv erstellen
   community.general.filesystem:
