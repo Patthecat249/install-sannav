@@ -1,0 +1,89 @@
+---
+# tasks file for sannav
+- name: Deaktiviere die Repo-Verwaltung in /etc/rhsm/rhsm.conf
+  ansible.builtin.ini_file:
+    path: /etc/rhsm/rhsm.conf
+    section: rhsm
+    option: manage_repos
+    value: "0"
+
+- name: Stelle sicher, dass das Mount-Verzeichnis existiert
+  ansible.builtin.file:
+    path: /mnt/cdrom
+    state: directory
+    mode: '0755'
+
+# - name: Prüfe, ob das ISO bereits gemountet ist
+#   ansible.builtin.shell: mount | grep -q "/mnt/cdrom"
+#   register: iso_mounted
+#   changed_when: false
+#   ignore_errors: true
+
+- name: Mounte das RHEL 9.5 ISO unter /mnt/cdrom
+  ansible.builtin.mount:
+    path: /mnt/cdrom
+    src: /opt/sva/downloads/rhel-9.5-x86_64-dvd.iso
+    fstype: iso9660
+    opts: loop
+    state: mounted
+  # when: iso_mounted.rc != 0
+
+- name: Template für AppStream-Repo bereitstellen
+  ansible.builtin.template:
+    src: appstream.repo.j2
+    dest: /etc/yum.repos.d/appstream.repo
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Template für BaseOS-Repo bereitstellen
+  ansible.builtin.template:
+    src: baseos.repo.j2
+    dest: /etc/yum.repos.d/baseos.repo
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: YUM-Cache aktualisieren
+  ansible.builtin.command: yum clean all
+  changed_when: false
+
+
+- name: Installiere erforderliche Pakete
+  ansible.builtin.dnf:
+    name:
+      - audit
+      - audit-libs
+      - iptables
+      - ipcalc
+      - lsof
+      - net-tools
+      - rng-tools
+      - bind-utils
+      - tar
+    state: present
+  register: package_installation
+
+# - name: Temporär SELinux auf permissive setzen
+#   ansible.builtin.command: setenforce 0
+#   ignore_errors: yes
+#   changed_when: false
+
+- name: SELinux dauerhaft deaktivieren
+  ansible.builtin.lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+  register: selinux_config
+
+- name: System neustarten, wenn SELinux-Konfiguration geändert wurde
+  ansible.builtin.reboot:
+    msg: "Reboot nach SELinux-Deaktivierung"
+    reboot_timeout: 600
+  when: selinux_config.changed
+
+- name: Entpacke Portal_2.3.1a-distribution.tar.gz nach /sannav
+  ansible.builtin.unarchive:
+    src: /opt/sva/downloads/Portal_2.3.1a-distribution.tar.gz
+    dest: /sannav
+    remote_src: yes

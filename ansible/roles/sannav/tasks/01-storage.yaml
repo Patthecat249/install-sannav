@@ -1,0 +1,56 @@
+---
+# tasks for storage
+
+# Storage for
+# /var/lib
+- name: Volume Group varlib-vg erstellen
+  community.general.lvg:
+    vg: varlib-vg
+    pvs: /dev/sdc
+
+- name: Logical Volume varlib-lv (119 GiB) anlegen
+  community.general.lvol:
+    vg: varlib-vg
+    lv: varlib-lv
+    size: 119G
+
+- name: XFS-Dateisystem auf varlib-lv erstellen
+  ansible.builtin.filesystem:
+    fstype: xfs
+    dev: /dev/varlib-vg/varlib-lv
+
+- name: varlib-lv auf /var/lib mounten
+  ansible.builtin.mount:
+    path: /var/lib
+    src: /dev/varlib-vg/varlib-lv
+    fstype: xfs
+    state: mounted
+
+# Storage fo
+# /sannav
+- name: Volume Group sannav-vg erstellen
+  community.general.lvg:
+    vg: sannav-vg
+    pvs:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/sde
+      - /dev/sdf
+
+- name: Logical Volume sannav-lv (599 GiB) anlegen
+  community.general.lvol:
+    vg: sannav-vg
+    lv: sannav-lv
+    size: 599G
+
+- name: XFS-Dateisystem auf sannav-lv erstellen
+  ansible.builtin.filesystem:
+    fstype: xfs
+    dev: /dev/sannav-vg/sannav-lv
+
+- name: sannav-lv auf /sannav mounten
+  ansible.builtin.mount:
+    path: /sannav
+    src: /dev/sannav-vg/sannav-lv
+    fstype: xfs
+    state: mounted

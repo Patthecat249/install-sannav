@@ -1,0 +1,10 @@
+- name: Install SANNAV
+  hosts: sannav
+  gather_facts: true
+  become: true
+  vars:
+    storage: true
+    requirements: true
+    firewall: true
+  roles:
+    - role: sannav

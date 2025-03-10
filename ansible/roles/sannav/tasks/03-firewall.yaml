@@ -1,0 +1,53 @@
+---
+# firewall rules
+- name: Firewalld-Backend auf iptables setzen
+  ansible.builtin.lineinfile:
+    path: /etc/firewalld/firewalld.conf
+    regexp: '^FirewallBackend='
+    line: 'FirewallBackend=iptables'
+  register: firewalld_config
+
+- name: Firewalld neu starten, wenn das Backend geändert wurde
+  ansible.builtin.service:
+    name: firewalld
+    state: restarted
+  when: firewalld_config.changed
+
+- name: "Firewall-Freischaltung für benötigte Ports"
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+    # zone: public   # Falls eine andere Zone genutzt wird, bitte anpassen.
+  loop:
+    - "22/tcp"             # SSH
+    - "25/tcp"             # SMTP
+    - "53/tcp"             # DNS (TCP)
+    - "53/udp"             # DNS (UDP)
+    - "123/udp"            # NTP
+    - "49/tcp"             # TACACS
+    - "80/tcp"             # HTTP
+    - "162/udp"            # SNMP-Trap
+    - "443/tcp"            # HTTPS
+    - "514/udp"            # Syslog
+    - "6514/tcp"           # Syslog (TLS)
+    - "2377/tcp"           # Docker Swarm
+    - "7946/tcp"           # Docker Swarm
+    - "7946/udp"           # Docker Swarm
+    - "5432/tcp"           # PostgreSQL
+    - "8080/tcp"           # HTTP alternative
+    - "10800-10815/tcp"    # Range
+    - "11211/tcp"          # Memcached
+    - "12000-12099/tcp"    # SANNAV containers
+    - "38917/tcp"
+    - "42239/tcp"
+    - "47100-47115/tcp"    # Range
+    - "47500/tcp"
+    - "19090/tcp"
+    - "19092/tcp"
+    - "19093/tcp"
+    - "19094/tcp"
+    - "19095/tcp"
+    - "18081/tcp"
+    - "18082/tcp"

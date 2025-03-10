@@ -1,0 +1,12 @@
+---
+- name: "Include Storage-Tasks"
+  import_tasks: 01-storage.yaml
+  when: storage|bool  # oder: when: storage == true
+
+- name: "Include Requirements-Tasks"
+  import_tasks: 02-requirements.yaml
+  when: requirements|bool  # oder: when: requirements == true
+
+- name: "Include Firewall-Tasks"
+  import_tasks: 03-firewall.yaml
+  when: firewall|bool  # oder: when: requirements == true
