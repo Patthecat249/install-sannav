@@ -15,12 +15,12 @@
     size: 119G
 
 - name: XFS-Dateisystem auf varlib-lv erstellen
-  ansible.builtin.filesystem:
+  community.general.filesystem:
     fstype: xfs
     dev: /dev/varlib-vg/varlib-lv
 
 - name: varlib-lv auf /var/lib mounten
-  ansible.builtin.mount:
+  ansible.posix.mount:
     path: /var/lib
     src: /dev/varlib-vg/varlib-lv
     fstype: xfs
@@ -44,12 +44,12 @@
     size: 599G
 
 - name: XFS-Dateisystem auf sannav-lv erstellen
-  ansible.builtin.filesystem:
+  community.general.filesystem:
     fstype: xfs
     dev: /dev/sannav-vg/sannav-lv
 
 - name: sannav-lv auf /sannav mounten
-  ansible.builtin.mount:
+  ansible.posix.mount:
     path: /sannav
     src: /dev/sannav-vg/sannav-lv
     fstype: xfs
