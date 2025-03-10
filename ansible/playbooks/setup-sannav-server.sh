@@ -10,7 +10,7 @@ gpgcheck=0
 EOF
 
 cat << EOF > /etc/yum.repos.d/baseos.repo
-[AppStream]
+[BaseOS]
 name=Red Hat Enterprise Linux 9.5.0 - BaseOS
 baseurl=file:///mnt/cdrom/BaseOS
 enabled=1
