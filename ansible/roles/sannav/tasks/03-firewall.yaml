@@ -22,6 +22,7 @@
     # zone: public   # Falls eine andere Zone genutzt wird, bitte anpassen.
   loop:
     - "22/tcp"             # SSH
+    - "2222/tcp"           # SSH for SAN Switches
     - "25/tcp"             # SMTP
     - "53/tcp"             # DNS (TCP)
     - "53/udp"             # DNS (UDP)
@@ -51,3 +52,5 @@
     - "19095/tcp"
     - "18081/tcp"
     - "18082/tcp"
+  tags:
+    - firewall
